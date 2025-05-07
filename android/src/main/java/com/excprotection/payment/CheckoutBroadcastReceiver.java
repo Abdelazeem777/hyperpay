@@ -3,6 +3,7 @@ package com.excprotection.payment;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.oppwa.mobile.connect.checkout.dialog.CheckoutActivity;
 
@@ -13,9 +14,17 @@ public class CheckoutBroadcastReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
+        Log.e("Receiver", "Chrome was opened!");
+
         String action = intent.getAction();
 
         if (CheckoutActivity.ACTION_ON_BEFORE_SUBMIT.equals(action)) {
+
+            Log.e("Receiver", "Chrome was opened2222!");
+            Log.e("Receiver", action);
+
+
             String paymentBrand = intent.getStringExtra(CheckoutActivity.EXTRA_PAYMENT_BRAND);
             String checkoutId = intent.getStringExtra(CheckoutActivity.EXTRA_CHECKOUT_ID);
 

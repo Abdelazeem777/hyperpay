@@ -1,12 +1,17 @@
 package com.excprotection.payment;
 
+import com.oppwa.mobile.connect.checkout.meta.CheckoutActivityResult;
+import com.oppwa.mobile.connect.checkout.meta.CheckoutActivityResultContract;
 import com.oppwa.mobile.connect.payment.PaymentParams;
 import com.oppwa.mobile.connect.payment.card.CardPaymentParams;
 import com.oppwa.mobile.connect.payment.stcpay.STCPayPaymentParams;
 import com.oppwa.mobile.connect.payment.stcpay.STCPayVerificationOption;
 import com.oppwa.mobile.connect.provider.ITransactionListener;
 import com.oppwa.mobile.connect.provider.OppPaymentProvider;
+
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -35,14 +40,15 @@ import com.oppwa.mobile.connect.provider.TransactionType;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.Toast;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public class PaymentPlugin  implements
-        PluginRegistry.ActivityResultListener ,ActivityAware
-        , FlutterPlugin, MethodCallHandler , PluginRegistry.NewIntentListener, ITransactionListener {
+public class PaymentPlugin  extends AppCompatActivity implements
+         ActivityAware
+        , FlutterPlugin, MethodCallHandler , ITransactionListener {
 
   private  MethodChannel.Result Result;
   private  String mode = "";
@@ -146,10 +152,13 @@ public class PaymentPlugin  implements
     checkoutSettings.setPaymentFormListener(new CustomFormListener());
 
     // SHOW TOTAL PAYMENT AMOUNT IN BUTTON
-    // checkoutSettings.setTotalAmountRequired(true);
+     checkoutSettings.setTotalAmountRequired(true);
+
+
 
     //SET SHOPPER
-    //checkoutSettings.setShopperResultUrl(ShopperResultUrl + "://result");
+//    checkoutSettings.setShopperResultUrl(ShopperResultUrl + "://result");
+
 
     //SAVE PAYMENT CARDS FOR NEXT
     if (setStorePaymentDetailsMode.equals("true")) {
@@ -162,17 +171,53 @@ public class PaymentPlugin  implements
     ComponentName componentName = new ComponentName(
             context.getPackageName(), CheckoutBroadcastReceiver.class.getName());
 
-    // SET UP THE INTENT AND START THE CHECKOUT ACTIVITY
 
-    Intent intent = new Intent(context.getApplicationContext(), CheckoutActivity.class);
+
+    // SET UP THE INTENT AND START THE CHECKOUT ACTIVITY
+    checkoutSettings.setComponentName(componentName);
+
+    Intent intent = new Intent(activity.getApplicationContext(), CheckoutActivity.class);
+    Log.e("1111111", "11111111111!");
+
+    Log.e("222222222", "222222222222!");
+//    intent.putExtra(CheckoutActivity.CHECKOUT_RECEIVER, componentName);
+
     intent.putExtra(CheckoutActivity.CHECKOUT_SETTINGS, checkoutSettings);
-    intent.putExtra(CheckoutActivity.CHECKOUT_RECEIVER, componentName);
+//    intent.putExtra(CheckoutActivity.CHECKOUT_RECEIVER, c);
+    Log.e("33333333333", "3333333333333!");
 
     // START ACTIVITY
-    activity.startActivityForResult(intent, 242);
+    activity.startActivityForResult(intent,  0);
+
+//    checkoutLauncher.launch(checkoutSettings);
+    Log.e("44444444", "4444444444!");
 
   }
 
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+
+    Log.e("onDestroy", "onDestroy");
+  }
+
+  private final ActivityResultLauncher<CheckoutSettings> checkoutLauncher = registerForActivityResult(
+          new CheckoutActivityResultContract(),
+          this::handleCheckoutResult
+  );
+
+  private void handleCheckoutResult(@NonNull CheckoutActivityResult result) {
+    if (result.isCanceled()) {
+      // shopper cancelled the checkout process
+      return;
+    }
+
+    String resourcePath = result.getResourcePath();
+
+    if (resourcePath != null) {
+      // request payment status using the resourcePath
+    }
+  }
   private void storedCardPayment(String checkoutId) {
 
     try {
@@ -309,7 +354,9 @@ public class PaymentPlugin  implements
   }
 
   @Override
-  public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    Log.e("onActivityResult", "onActivityResult");
+    super.onActivityResult(requestCode, resultCode, data);
     switch (resultCode) {
       case CheckoutActivity.RESULT_OK :
         /* transaction completed */
@@ -318,12 +365,12 @@ public class PaymentPlugin  implements
 
         /* resource path if needed */
         // String resourcePath = data.getStringExtra(CheckoutActivity.CHECKOUT_RESULT_RESOURCE_PATH);
-        if (transaction.getTransactionType() == TransactionType.SYNC) {
-          /* check the result of synchronous transaction */
-          success("SYNC");
-        }
+          if (transaction != null && transaction.getTransactionType() == TransactionType.SYNC) {
+              /* check the result of synchronous transaction */
+              success("SYNC");
+          }
 
-      break ;
+          break ;
       case CheckoutActivity.RESULT_CANCELED :
               /* shopper canceled the checkout process */
               error("2", "Canceled", "");
@@ -336,7 +383,7 @@ public class PaymentPlugin  implements
 
     }
 
-    return  true ;
+//    return  true ;
   }
 
   public void success(final Object result) {
@@ -356,12 +403,14 @@ public class PaymentPlugin  implements
   }
 
   @Override
-  public boolean onNewIntent(@NonNull Intent intent) {
+  protected void onNewIntent(@NonNull Intent intent) {
+    super.onNewIntent(intent);
+
     // TO BACK TO VIEW
     if (intent.getScheme() != null && intent.getScheme().equals(ShopperResultUrl)) {
       success("success");
     }
-    return  true ;
+//    return  true ;
   }
 
 
@@ -373,8 +422,8 @@ public class PaymentPlugin  implements
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
     activity = binding.getActivity();
-    binding.addActivityResultListener(this);
-    binding.addOnNewIntentListener(this); // TO LISTEN ON NEW INTENT OPEN
+//    binding.addActivityResultListener(this);
+//    binding.addOnNewIntentListener(this); // TO LISTEN ON NEW INTENT OPEN
 
   }
 

@@ -46,7 +46,9 @@
 
         <receiver
             android:name=".CheckoutBroadcastReceiver"
-            android:exported="false" />
+            android:enabled="true"
+            android:exported="true"
+            />
 
 
     </application>
