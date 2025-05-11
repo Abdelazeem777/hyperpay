@@ -65,9 +65,9 @@ class _MyHomePageState extends State<MyHomePage> {
               String? checkoutId = await getCheckOut();
               if(checkoutId !=null) {
                 /// Brands Names [ VISA , MASTER , MADA , STC_PAY , APPLEPAY]
-                payRequestNowReadyUI( brandsName: [ "VISA" , "MASTER" , "MADA" ,"PAYPAL", "STC_PAY" , "APPLEPAY"], checkoutId: checkoutId);
+                payRequestNowReadyUI( brandsName: [ "VISA" , "APPLEPAY"], checkoutId: checkoutId);
               }
-              }, child: const Text("[VISA,MASTER,MADA,STC_PAY,APPLEPAY]" , style: TextStyle(fontSize: 20),)),
+              }, child: const Text("[VISA]" , style: TextStyle(fontSize: 20),)),
 
             const Divider(),
             Text("pay with custom ui".toUpperCase() , style: const TextStyle(fontSize: 20 , color: Colors.red),),
@@ -127,10 +127,14 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
       );
 
+    print(paymentResultData.paymentResult);
+    print("**************************************");
+
     if (paymentResultData.paymentResult == PaymentResult.success ||
         paymentResultData.paymentResult == PaymentResult.sync) {
       // do something
       print("back to app");
+      print("-----------"*100);
     }
   }
 

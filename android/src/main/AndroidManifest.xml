@@ -9,6 +9,7 @@
 
         <activity
             android:name=".PaymentPlugin"
+            android:enableOnBackInvokedCallback="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -34,20 +35,20 @@
             android:name="com.oppwa.mobile.connect.checkout.dialog.CheckoutActivity"
             android:configChanges="orientation"
             android:exported="true"
+            android:theme="@style/Theme.Checkout.Light"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan"
             tools:replace="android:windowSoftInputMode" />
 
              
-        
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
 
         <receiver
             android:name=".CheckoutBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true"
+            android:exported="false"
             />
 
 

@@ -46,6 +46,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.oppwa.mobile.connect.checkout.dialog.CheckoutViewModel.CHECKOUT_SETTINGS;
+
 public class PaymentPlugin  extends AppCompatActivity implements
          ActivityAware
         , FlutterPlugin, MethodCallHandler , ITransactionListener {
@@ -135,6 +137,20 @@ public class PaymentPlugin  extends AppCompatActivity implements
 
     Set<String> paymentBrands = new LinkedHashSet<>(brandsReadyUi);
     // CHECK PAYMENT MODE
+
+    if (checkoutId == null || paymentBrands.isEmpty()) {
+      Log.e("CheckoutError", "Invalid checkoutId or paymentBrands");
+      return;
+    }
+
+
+    // In CheckoutActivity
+//    CheckoutSettings settings = (CheckoutSettings) getIntent().getSerializableExtra(CHECKOUT_SETTINGS);
+//    if (settings == null) {
+//      Log.e("CheckoutActivity", "ERROR: checkout setting is null");
+//    }
+
+
     CheckoutSettings checkoutSettings;
     if (mode.equals("live")) {
       //LIVE MODE
@@ -182,12 +198,19 @@ public class PaymentPlugin  extends AppCompatActivity implements
     Log.e("222222222", "222222222222!");
 //    intent.putExtra(CheckoutActivity.CHECKOUT_RECEIVER, componentName);
 
-    intent.putExtra(CheckoutActivity.CHECKOUT_SETTINGS, checkoutSettings);
-//    intent.putExtra(CheckoutActivity.CHECKOUT_RECEIVER, c);
+    intent.putExtra(CHECKOUT_SETTINGS, checkoutSettings);
+//    intent.putExtra(CheckoutActivity.CHECKOUT_RECEIVER, componentName);
     Log.e("33333333333", "3333333333333!");
 
     // START ACTIVITY
-    activity.startActivityForResult(intent,  0);
+    activity.startActivityForResult(intent,  100);
+
+//    CheckoutSettings settings = getIntent().getParcelableExtra(CHECKOUT_SETTINGS);
+//    if (settings == null) {
+//      Log.e("CheckoutActivity", "CheckoutSettings is null!");
+//      finish();
+//      return;
+//    }
 
 //    checkoutLauncher.launch(checkoutSettings);
     Log.e("44444444", "4444444444!");
@@ -405,6 +428,8 @@ public class PaymentPlugin  extends AppCompatActivity implements
   @Override
   protected void onNewIntent(@NonNull Intent intent) {
     super.onNewIntent(intent);
+
+    Log.e("onNewIntent", "onNewIntent");
 
     // TO BACK TO VIEW
     if (intent.getScheme() != null && intent.getScheme().equals(ShopperResultUrl)) {
