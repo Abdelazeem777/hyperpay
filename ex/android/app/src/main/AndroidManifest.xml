@@ -19,8 +19,9 @@
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
+
             <intent-filter>
-                <data android:scheme="com.testpayment.payment" android:host="result"/>
+                <data android:scheme="com.example.ex" android:host="https"/>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
@@ -35,9 +36,7 @@
             tools:replace="android:theme"
             android:name="com.oppwa.mobile.connect.checkout.dialog.CheckoutActivity"
                 android:theme="@style/Theme.Checkout.Light" />
-        <receiver
-            android:name=".CheckoutBroadcastReceiver"
-            android:exported="false" />
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
