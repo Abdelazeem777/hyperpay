@@ -43,5 +43,6 @@ dependencies {
     debugImplementation(name: "ipworks3ds_sdk", ext: 'aar')
     releaseImplementation(name: "ipworks3ds_sdk_deploy", ext: 'aar')
     implementation "androidx.appcompat:appcompat:1.7.0"
+    implementation "com.google.android.material:material:1.9.0"
 
 }
