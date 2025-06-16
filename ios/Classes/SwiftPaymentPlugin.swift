@@ -119,6 +119,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
              let checkoutSettings = OPPCheckoutSettings()
            //  checkoutSettings.paymentBrands = self.brandsReadyUi;
              if(self.brandsReadyUi.contains("APPLEPAY")){
+                    checkoutSettings.applePayType = PKPaymentButtonType.buy
 
                      let paymentRequest = OPPPaymentProvider.paymentRequest(withMerchantIdentifier: self.applePaybundel, countryCode: self.countryCode)
                      paymentRequest.paymentSummaryItems = [PKPaymentSummaryItem(label: self.companyName, amount: NSDecimalNumber(value: self.amount))]
