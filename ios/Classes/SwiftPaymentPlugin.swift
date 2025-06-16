@@ -131,7 +131,10 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                          paymentRequest.supportedNetworks = [ PKPaymentNetwork.visa, PKPaymentNetwork.masterCard ]
                      }
                      checkoutSettings.applePayPaymentRequest = paymentRequest
-                    // checkoutSettings.paymentBrands = ["APPLEPAY"]
+                        // Set paymentBrands to only Apple Pay if it's the only one in the list
+                        if self.brandsReadyUi.count == 1 && self.brandsReadyUi.first == "APPLEPAY" {
+                            checkoutSettings.paymentBrands = ["APPLEPAY"]
+                        }
              }
              checkoutSettings.language = self.lang
              // Set available payment brands for your shop
