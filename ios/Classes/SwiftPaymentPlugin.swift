@@ -117,7 +117,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
          DispatchQueue.main.async{
 
              let checkoutSettings = OPPCheckoutSettings()
-             checkoutSettings.paymentBrands = self.brandsReadyUi;
+           //  checkoutSettings.paymentBrands = self.brandsReadyUi;
              if(self.brandsReadyUi.contains("APPLEPAY")){
 
                      let paymentRequest = OPPPaymentProvider.paymentRequest(withMerchantIdentifier: self.applePaybundel, countryCode: self.countryCode)
