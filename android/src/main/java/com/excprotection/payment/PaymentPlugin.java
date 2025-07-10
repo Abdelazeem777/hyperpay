@@ -30,6 +30,7 @@ import com.oppwa.mobile.connect.payment.ImagesRequest;
 import com.oppwa.mobile.connect.payment.token.TokenPaymentParams;
 import com.oppwa.mobile.connect.provider.Connect;
 //import com.oppwa.mobile.connect.provider.ITransactionListener;
+import com.oppwa.mobile.connect.provider.ThreeDSWorkflowListener;
 import com.oppwa.mobile.connect.provider.Transaction;
 import com.oppwa.mobile.connect.provider.TransactionType;
 import android.net.Uri;
@@ -195,6 +196,14 @@ public class PaymentPlugin  implements
 
       paymentProvider = new OppPaymentProvider(activity.getBaseContext(), providerMode);
 
+      //Set 3DS Workflow Listener
+      paymentProvider.setThreeDSWorkflowListener(new ThreeDSWorkflowListener() {
+        @Override
+        public Activity onThreeDSChallengeRequired() {
+          return activity;
+        }
+      });
+
       //Submit Transaction
       //Listen for transaction Completed - transaction Failed
     paymentProvider.submitTransaction(transaction, this);
@@ -262,6 +271,14 @@ public class PaymentPlugin  implements
 
             paymentProvider = new OppPaymentProvider(activity.getBaseContext(), providerMode);
 
+            //Set 3DS Workflow Listener
+            paymentProvider.setThreeDSWorkflowListener(new ThreeDSWorkflowListener() {
+              @Override
+              public Activity onThreeDSChallengeRequired() {
+                return activity;
+              }
+            });
+
             //Submit Transaction
             //Listen for transaction Completed - transaction Failed
             paymentProvider.submitTransaction(transaction, this);
@@ -297,6 +314,14 @@ public class PaymentPlugin  implements
         Transaction transaction = new Transaction(stcPayPaymentParams);
 
         paymentProvider = new OppPaymentProvider(activity.getBaseContext(), providerMode);
+
+        //Set 3DS Workflow Listener
+        paymentProvider.setThreeDSWorkflowListener(new ThreeDSWorkflowListener() {
+          @Override
+          public Activity onThreeDSChallengeRequired() {
+            return activity;
+          }
+        });
 
         //Submit Transaction
         //Listen for transaction Completed - transaction Failed

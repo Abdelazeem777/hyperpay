@@ -31,6 +31,21 @@ class CustomUI {
   /// typically refers to a boolean variable or a configuration option that determines whether tokenization is enabled or disabled in a payment processing system or application.
   bool enabledTokenization;
 
+  /// Apple Pay merchant ID - nullable for non-Apple Pay payments
+  String? merchantId;
+
+  /// Apple Pay country code - nullable for non-Apple Pay payments
+  String? countryCode;
+
+  /// Apple Pay company name - nullable for non-Apple Pay payments
+  String? companyName;
+
+  /// Apple Pay currency code - nullable for non-Apple Pay payments
+  String? currencyCode;
+
+  /// Apple Pay amount - nullable for non-Apple Pay payments
+  double? amount;
+
   CustomUI({
     required this.checkoutId,
     required this.brandName,
@@ -40,5 +55,10 @@ class CustomUI {
     required this.year,
     required this.cvv,
     this.enabledTokenization = false,
+    this.merchantId,
+    this.countryCode,
+    this.companyName,
+    this.currencyCode,
+    this.amount,
   });
 }

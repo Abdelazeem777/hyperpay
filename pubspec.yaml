@@ -3,16 +3,14 @@ description: The HyperPay platform offers a complete, easy-to-use guide to enabl
 version: 3.1.4
 repository: https://github.com/ahmedelkhyary/hyperpay
 
-
 environment:
-  sdk: '>=2.18.5 <4.0.0'
+  sdk: ">=2.18.5 <4.0.0"
   flutter: ">=2.5.0"
 
 dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
-
 
 dev_dependencies:
   flutter_test:

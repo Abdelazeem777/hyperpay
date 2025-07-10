@@ -62,6 +62,11 @@ class FlutterHyperPay {
       cvv: customUI.cvv,
       lang: lang,
       enabledTokenization: customUI.enabledTokenization,
+      merchantId: customUI.merchantId,
+      countryCode: customUI.countryCode,
+      companyName: customUI.companyName,
+      currencyCode: customUI.currencyCode,
+      amount: customUI.amount,
     );
   }
 

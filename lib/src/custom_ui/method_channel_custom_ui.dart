@@ -22,6 +22,11 @@ Future<PaymentResultData> implementPaymentCustomUI({
   required String year,
   required String cvv,
   required bool enabledTokenization,
+  String? merchantId,
+  String? countryCode,
+  String? companyName,
+  String? currencyCode,
+  double? amount,
 }) async {
   String transactionStatus;
   var platform = MethodChannel(channelName);
@@ -40,6 +45,11 @@ Future<PaymentResultData> implementPaymentCustomUI({
         cvv: cvv,
         lang: lang,
         enabledTokenization: enabledTokenization,
+        merchantId: merchantId,
+        countryCode: countryCode,
+        companyName: companyName,
+        currencyCode: currencyCode,
+        amount: amount,
       ),
     );
     transactionStatus = '$result';
@@ -56,7 +66,7 @@ Future<PaymentResultData> implementPaymentCustomUI({
 /// like payment mode, brand, checkoutId, shopperResultUrl, lang, cardNumber,
 /// holderName, month, year, cvv, and enabledTokenization.
 /// It then generates and returns a map containing each of the data fields.
-Map<String, String?> getCustomUiModelCards({
+Map<String, dynamic> getCustomUiModelCards({
   required PaymentMode paymentMode,
   required String brand,
   required String checkoutId,
@@ -68,8 +78,13 @@ Map<String, String?> getCustomUiModelCards({
   required String year,
   required String cvv,
   required bool enabledTokenization,
+  String? merchantId,
+  String? countryCode,
+  String? companyName,
+  String? currencyCode,
+  double? amount,
 }) {
-  return {
+  Map<String, dynamic> data = {
     "type": PaymentConst.customUi,
     "mode": paymentMode.toString().split('.').last,
     "checkoutid": checkoutId,
@@ -83,4 +98,23 @@ Map<String, String?> getCustomUiModelCards({
     "EnabledTokenization": enabledTokenization.toString(),
     "ShopperResultUrl": shopperResultUrl,
   };
+
+  // Add Apple Pay parameters if they are provided
+  if (merchantId != null) {
+    data["merchantId"] = merchantId;
+  }
+  if (countryCode != null) {
+    data["CountryCode"] = countryCode;
+  }
+  if (companyName != null) {
+    data["companyName"] = companyName;
+  }
+  if (currencyCode != null) {
+    data["currencyCode"] = currencyCode;
+  }
+  if (amount != null) {
+    data["amount"] = amount;
+  }
+
+  return data;
 }
