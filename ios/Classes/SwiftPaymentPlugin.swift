@@ -172,11 +172,13 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                  
                  if let error = error {
                      result1(FlutterError.init(code: "TRANSACTION_ERROR",message: "Error: " + error.localizedDescription,details: nil))
+                     self.Presult = nil
                      return
                  }
                  
                  guard let validTransaction = transaction else {
                      result1(FlutterError.init(code: "TRANSACTION_NIL",message: "Transaction is nil",details: nil))
+                     self.Presult = nil
                      return
                  }
                  
@@ -185,6 +187,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                     self.dismissThreeDSNavigationControllerIfPresented {
                         DispatchQueue.main.async {
                             result1("SYNC")
+                            self.Presult = nil
                         }
                     }
                 }
@@ -194,6 +197,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                  else {
                      // result1("error")
                      result1(FlutterError.init(code: "1",message:"Error : operation cancel",details: nil))
+                     self.Presult = nil
                      // Executed in case of failure of the transaction for any reason
                      print(self.transaction.debugDescription)
                  }
@@ -201,6 +205,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                                                     , cancelHandler: {
                                                     // result1("error")
                                                      result1(FlutterError.init(code: "1",message: "Error : operation cancel",details: nil))
+                                                     self.Presult = nil
                                                         // Executed if the shopper closes the payment page prematurely
                                                         print(self.transaction.debugDescription)
                                                     })
@@ -281,6 +286,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                     else if transaction.type == .synchronous {
                         self.dismissThreeDSNavigationControllerIfPresented {
                             result1("SYNC")
+                            self.Presult = nil
                         }
                     }
                     else {
@@ -343,6 +349,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                 } else if transaction.type == .synchronous {
                     self.dismissThreeDSNavigationControllerIfPresented {
                         result1("SYNC")
+                        self.Presult = nil
                     }
                 } else {
                     let errorMessage = error?.localizedDescription ?? "Transaction failed"
@@ -412,6 +419,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
             self.checkoutProvider?.dismissCheckout(animated: true) {
                 DispatchQueue.main.async {
                     result("success")
+                    self.Presult = nil
                 }
             }
         }
@@ -419,6 +427,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
             self.safariVC?.dismiss(animated: true) {
                 DispatchQueue.main.async {
                     result("success")
+                    self.Presult = nil
                 }
             }
         }
@@ -462,7 +471,13 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
     
     // MARK: - PKPaymentAuthorizationViewControllerDelegate
     public func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
-        controller.dismiss(animated: true, completion: nil)
+        controller.dismiss(animated: true) {
+            // If Presult is still available, user cancelled before payment completion
+            if let result = self.Presult {
+                result(FlutterError(code: "PAYMENT_CANCELLED", message: "Apple Pay was cancelled by user", details: nil))
+                self.Presult = nil
+            }
+        }
     }
     
     public func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, completion: @escaping (PKPaymentAuthorizationStatus) -> Void) {
@@ -485,12 +500,14 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                         self.dismissThreeDSNavigationControllerIfPresented {
                             DispatchQueue.main.async {
                                 self.Presult!("SYNC")
+                                self.Presult = nil
                             }
                         }
                     } else {
                         self.dismissThreeDSNavigationControllerIfPresented {
                             DispatchQueue.main.async {
                                 self.Presult!("success")
+                                self.Presult = nil
                             }
                         }
                     }
@@ -566,7 +583,13 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
     
     // MARK: - SFSafariViewControllerDelegate
     public func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        controller.dismiss(animated: true, completion: nil)
+        controller.dismiss(animated: true) {
+            // If Presult is still available, user cancelled before payment completion
+            if let result = self.Presult {
+                result(FlutterError(code: "PAYMENT_CANCELLED", message: "Payment was cancelled by user", details: nil))
+                self.Presult = nil
+            }
+        }
     }
     
     public func safariViewController(_ controller: SFSafariViewController, didCompleteInitialLoad didLoadSuccessfully: Bool) {
@@ -599,6 +622,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
             // Return error to Flutter
             DispatchQueue.main.async {
                 self.Presult?(FlutterError(code: "3DS_CANCELLED", message: "3DS Challenge was cancelled by user", details: nil))
+                self.Presult = nil
             }
         }
     }
