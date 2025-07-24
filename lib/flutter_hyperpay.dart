@@ -89,7 +89,7 @@ class FlutterHyperPay {
   /// It accepts an argument of type StoredCards and makes a call to the implementPaymentStoredCards
   /// function with the values required for the payment.
 
-  Future<PaymentResultData> payWithSoredCards(
+  Future<PaymentResultData> payWithStoredCards(
       {required StoredCards storedCards}) async {
     return await implementPaymentStoredCards(
       brand: storedCards.brandName,
@@ -102,4 +102,9 @@ class FlutterHyperPay {
       lang: lang,
     );
   }
+
+  @Deprecated('Use payWithStoredCards instead')
+  Future<PaymentResultData> payWithSoredCards(
+          {required StoredCards storedCards}) =>
+      payWithStoredCards(storedCards: storedCards);
 }
