@@ -650,7 +650,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
 
             default:
                 print("Warning: Unsupported payment network '\(networkString)'. Skipping.")
-                paymentNetworks.append(lowercasedNetwork)
+                // Skip invalid network names
             }
         }
 
