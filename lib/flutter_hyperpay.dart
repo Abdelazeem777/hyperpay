@@ -43,6 +43,7 @@ class FlutterHyperPay {
       lang: lang,
       themColorHexIOS: readyUI.themColorHexIOS,
       setStorePaymentDetailsMode: readyUI.setStorePaymentDetailsMode,
+      supportedNetworks: readyUI.supportedNetworksApplePayIOS,
     );
   }
 
@@ -67,6 +68,7 @@ class FlutterHyperPay {
       companyName: customUI.companyName,
       currencyCode: customUI.currencyCode,
       amount: customUI.amount,
+      supportedNetworks: customUI.supportedNetworksApplePayIOS,
     );
   }
 

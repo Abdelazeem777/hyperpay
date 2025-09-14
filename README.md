@@ -8,12 +8,12 @@ The HyperPay platform offers a complete, easy-to-use guide to enable seamless in
 [![License](https://img.shields.io/badge/license-MIT-purple.svg)](https://pub.dev/packages/hyperpay_plugin/license)
 [![Coffee](https://img.shields.io/badge/coffee-black?logo=buy-me-a-coffee)](https://buymeacoffee.com/ahmedelkhyary)
 
-
 ## Support ReadyUI , CustomUI
+
 - **VISA** **,** **MasterCard**
 - **STC**
 - **Apple Pay**
-- **MADA** *( Saudi Arabia )*
+- **MADA** _( Saudi Arabia )_
 
 ### Android Setup
 
@@ -37,12 +37,12 @@ The HyperPay platform offers a complete, easy-to-use guide to enable seamless in
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation 'androidx.databinding:viewbinding:7.1.2'
 ```
+
 2. Open `app/build.gradle` and make sure that the `minSdkVersion` is **21**
    &NewLine;
 
 3. Open your `AndroidManifest.xml`, and put `intent-filter` inside `activity`.
    &NewLine;
-
 
 ```
 <application
@@ -57,18 +57,20 @@ The HyperPay platform offers a complete, easy-to-use guide to enable seamless in
             </intent-filter>
   </activity>
 </application>
-        
+
 ```
+
 #### Note about Intent-filter scheme
+
 #### `shopperResultUrl since mSDK version 6.0.0 the shopper result URL is not required`
+
 The `Scheme` field must match the `InAppPaymentSetting.shopperResultUrl` field.
 Don't make `Scheme` like `com.testPayment.Payment` avoid capital letters in Android.
 
 `It's used when making a payment outside the app (Like open browser) and back into the app`
 
-
-
 ### IOS Setup
+
 1. Open Podfile, and paste the following inside of it:
    &NewLine;
 
@@ -92,12 +94,10 @@ end
 
 <br /><img src="https://user-images.githubusercontent.com/70061912/222664709-0744b798-ba1d-47e4-917d-c05e803f89ef.PNG" atl="Xcode URL type" width="700"/>
 
-
-
-
-
 ### Setup HyperPay Environment Configuration
+
 define instanse of `FlutterHyperPay`
+
 ```dart
 late FlutterHyperPay flutterHyperPay ;
 flutterHyperPay = FlutterHyperPay(
@@ -107,11 +107,13 @@ lang: InAppPaymentSetting.getLang(),
 );
 
 ```
+
 create a method to get the checkoutId
+
 ```
   /// URL TO GET CHECKOUT ID FOR TEST
   /// http://dev.hyperpay.com/hyperpay-demo/getcheckoutid.php
-  /// Brands Names [ VISA , MASTER , MADA , STC_PAY , APPLEPAY]
+  /// Brands Names [ PaymentBrands.visa , PaymentBrands.masterCard , PaymentBrands.mada , PaymentBrands.stcPay , PaymentBrands.applePay ]
 
 getCheckOut() async {
     final url = Uri.parse('https://dev.hyperpay.com/hyperpay-demo/getcheckoutid.php');
@@ -119,15 +121,23 @@ getCheckOut() async {
     if (response.statusCode == 200) {
       payRequestNowReadyUI(
         checkoutId: json.decode(response.body)['id'],
-        brandsName: [ "VISA" , "MASTER" , "MADA" ,"PAYPAL", "STC_PAY" , "APPLEPAY"]);
+        brandsName: [
+          PaymentBrands.visa,
+          PaymentBrands.masterCard,
+          PaymentBrands.mada,
+          PaymentBrands.stcPay,
+          PaymentBrands.applePay
+        ]);
     }else{
       dev.log(response.body.toString(), name: "STATUS CODE ERROR");
     }
   }
-  ```
+```
+
 If you want using `readyUI` send checkoutId and List of `brandsName` to Plugin
 
-Brands Names support [ VISA , MASTER , MADA , STC_PAY , APPLEPAY]
+Brands Names support [ PaymentBrands.visa , PaymentBrands.masterCard , PaymentBrands.mada , PaymentBrands.stcPay , PaymentBrands.applePay ]
+
 ```
   payRequestNowReadyUI(
       {required List<String> brandsName, required String checkoutId}) async {
@@ -140,6 +150,11 @@ Brands Names support [ VISA , MASTER , MADA , STC_PAY , APPLEPAY]
             countryCodeApplePayIOS: InAppPaymentSetting.countryCode, // applePay
             companyNameApplePayIOS: "Test Co", // applePay
             themColorHexIOS: "#000000" ,// FOR IOS ONLY
+            supportedNetworksApplePayIOS: [
+              PaymentBrands.visa,
+              PaymentBrands.masterCard,
+              PaymentBrands.mada
+            ], // Configure supported networks
             setStorePaymentDetailsMode: true // store payment details for future use
             ),
       );
@@ -147,26 +162,51 @@ Brands Names support [ VISA , MASTER , MADA , STC_PAY , APPLEPAY]
 
 
 ```
-If you want using `CustomUI` 
+
+If you want using `CustomUI`
+
 ```
- payRequestNowCustomUi(
+  payRequestNowCustomUi(
       {required String brandName, required String checkoutId}) async {
     PaymentResultData paymentResultData;
-    paymentResultData = await flutterHyperPay.customUICards(
-      customUI: CustomUI(
-        brandName: brandName,
-        checkoutId: checkoutId,
-        cardNumber: "5541805721646120",
-        holderName: "test name",
-        month: 12,
-        year: 2023,
-        cvv: 123,
-        enabledTokenization: false, // default
-      ),
-    );
+
+    if (brandName == PaymentBrands.applePay) {
+      // Apple Pay CustomUI example
+      paymentResultData = await flutterHyperPay.customUICards(
+        customUI: CustomUI(
+          brandName: brandName,
+          checkoutId: checkoutId,
+          merchantId: InAppPaymentSetting.merchantId,
+          countryCode: InAppPaymentSetting.countryCode,
+          companyName: "Test Co",
+          currencyCode: "SAR",
+          amount: 99.99,
+          supportedNetworks: [
+            PaymentBrands.visa,
+            PaymentBrands.masterCard
+          ], // Configure supported networks
+        ),
+      );
+    } else {
+      // Regular card payment CustomUI example
+      paymentResultData = await flutterHyperPay.customUICards(
+        customUI: CustomUI(
+          brandName: brandName,
+          checkoutId: checkoutId,
+          cardNumber: "5541805721646120",
+          holderName: "test name",
+          month: 12,
+          year: 2023,
+          cvv: 123,
+          enabledTokenization: false, // default
+        ),
+      );
+    }
   }
 ```
+
 `STC CustomUI` - now for android only next release we will support IOS
+
 ```
   // STC_PAY
     payRequestNowCustomUiSTCPAY(
@@ -182,12 +222,14 @@ If you want using `CustomUI`
 ```
 
 get check the payment status after request
+
 ```
     if (paymentResultData.paymentResult == PaymentResult.success ||
         paymentResultData.paymentResult == PaymentResult.sync) {
       // do something
     }
 ```
+
 `ReadyUI`
 change color in `android` platform
 open `android/app/src/main/res/values` and add the following lines
@@ -200,7 +242,9 @@ open `android/app/src/main/res/values` and add the following lines
     <color name="cameraTintColor">#000000</color>
     <color name="checkboxButtonTintColor">#000000</color>
 ```
+
 `payment setting`
+
 ```
   class InAppPaymentSetting {
    // shopperResultUrl : this name must like scheme in intent-filter, url scheme in xcode
@@ -218,4 +262,100 @@ open `android/app/src/main/res/values` and add the following lines
 }
 ```
 
-[`MerchantId apple pay Setup click here this steps to create and verify apple pay and domain`](https://github.com/ahmedelkhyary/applepay_merchantId_config) 
+[`MerchantId apple pay Setup click here this steps to create and verify apple pay and domain`](https://github.com/ahmedelkhyary/applepay_merchantId_config)
+
+## Apple Pay Supported Networks Configuration
+
+You can now configure which payment networks are supported for Apple Pay transactions. This allows you to customize the available payment options based on your business requirements and regional preferences.
+
+### Supported Network Names
+
+The following network names are supported (case-insensitive):
+
+- `"visa"` or `PaymentBrands.visa` - Visa
+- `"masterCard"`, `"master card"` or `PaymentBrands.masterCard` - MasterCard
+- `"mada"` or `PaymentBrands.mada` - Mada (iOS 12.1.1+ only, primarily used in Saudi Arabia)
+- `"amex"` or `"american express"` - American Express
+- `"discover"` - Discover (iOS 9.0+ only)
+
+**💡 Best Practice:** Use the predefined constants from `PaymentBrands` class for consistency and type safety. The Swift implementation handles case conversion automatically.
+
+### For ReadyUI:
+
+```dart
+// Option 1: Using PaymentBrands constants (Recommended)
+final readyUI = ReadyUI(
+  checkoutId: "your_checkout_id",
+  brandsName: [PaymentBrands.applePay, PaymentBrands.visa],
+  merchantIdApplePayIOS: "merchant.com.example",
+  countryCodeApplePayIOS: "US",
+  companyNameApplePayIOS: "Your Company",
+  supportedNetworksApplePayIOS: [
+    PaymentBrands.visa,
+    PaymentBrands.masterCard
+  ], // Configure supported networks
+  setStorePaymentDetailsMode: false,
+);
+
+// Option 2: Using string literals
+final readyUI = ReadyUI(
+  checkoutId: "your_checkout_id",
+  brandsName: ["APPLEPAY", "VISA"],
+  merchantIdApplePayIOS: "merchant.com.example",
+  countryCodeApplePayIOS: "US",
+  companyNameApplePayIOS: "Your Company",
+  supportedNetworksApplePayIOS: ["visa", "masterCard"], // Configure supported networks
+  setStorePaymentDetailsMode: false,
+);
+
+final result = await flutterHyperPay.readyUICards(readyUI: readyUI);
+```
+
+### For CustomUI:
+
+```dart
+// Option 1: Using PaymentBrands constants (Recommended)
+final customUI = CustomUI(
+  checkoutId: "your_checkout_id",
+  brandName: PaymentBrands.applePay,
+  merchantId: "merchant.com.example",
+  countryCode: "US",
+  companyName: "Your Company",
+  currencyCode: "USD",
+  amount: 99.99,
+  supportedNetworks: [
+    PaymentBrands.visa,
+    PaymentBrands.masterCard,
+    PaymentBrands.mada
+  ], // Configure supported networks
+);
+
+// Option 2: Using string literals
+final customUI = CustomUI(
+  checkoutId: "your_checkout_id",
+  brandName: "APPLEPAY",
+  merchantId: "merchant.com.example",
+  countryCode: "US",
+  companyName: "Your Company",
+  currencyCode: "USD",
+  amount: 99.99,
+  supportedNetworks: ["visa", "masterCard", "mada"], // Configure supported networks
+);
+
+final result = await flutterHyperPay.customUICards(customUI: customUI);
+```
+
+### Edge Cases and Best Practices
+
+1. **Empty or null networks**: If `supportedNetworks` is empty or null, the plugin will use default networks based on iOS version:
+
+   - iOS 12.1.1+: `[mada, visa, masterCard]`
+   - Older versions: `[visa, masterCard]`
+
+2. **Invalid network names**: Invalid network names are automatically filtered out with a warning logged to the console.
+
+3. **iOS version compatibility**: Networks not supported on the current iOS version are automatically excluded (e.g., Mada on iOS < 12.1.1).
+
+4. **Fallback behavior**: If no valid networks remain after filtering, the plugin falls back to default networks.
+
+5. **Network name flexibility**: Network names are trimmed and converted to lowercase for better user experience.

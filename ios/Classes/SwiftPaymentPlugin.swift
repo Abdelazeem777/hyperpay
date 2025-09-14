@@ -29,6 +29,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
     var amount:Double = 1;
     var themColorHex:String = "";
     var companyName:String = "";
+    var supportedNetworks:[String] = [];
     var safariVC: SFSafariViewController?
     var transaction: OPPTransaction?
     var provider = OPPPaymentProvider(mode: OPPProviderMode.test)
@@ -63,6 +64,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
             self.checkoutid = (args["checkoutid"] as? String) ?? ""
             self.shopperResultURL = (args["ShopperResultUrl"] as? String) ?? ""
             self.lang = (args["lang"] as? String) ?? ""
+            self.supportedNetworks = (args["supportedNetworks"] as? [String]) ?? []
 
             if self.type == "ReadyUI" {
                 self.applePaybundel = (args["merchantId"] as? String) ?? ""
@@ -146,12 +148,8 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                      let paymentRequest = OPPPaymentProvider.paymentRequest(withMerchantIdentifier: self.applePaybundel, countryCode: self.countryCode)
                      paymentRequest.paymentSummaryItems = [PKPaymentSummaryItem(label: self.companyName, amount: NSDecimalNumber(value: self.amount))]
 
-                     if #available(iOS 12.1.1, *) {
-                         paymentRequest.supportedNetworks = [ PKPaymentNetwork.mada,PKPaymentNetwork.visa, PKPaymentNetwork.masterCard ]
-                     }
-                     else {
-                         paymentRequest.supportedNetworks = [ PKPaymentNetwork.visa, PKPaymentNetwork.masterCard ]
-                     }
+                     paymentRequest.supportedNetworks = self.convertToPaymentNetworks(self.supportedNetworks)
+
                      checkoutSettings.applePayPaymentRequest = paymentRequest
              }
              
@@ -371,12 +369,7 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
         // Create payment summary items
         request.paymentSummaryItems = [PKPaymentSummaryItem(label: self.companyName, amount: NSDecimalNumber(value: formattedAmount))]
         
-        // Set supported networks
-        if #available(iOS 12.1.1, *) {
-            request.supportedNetworks = [PKPaymentNetwork.mada, PKPaymentNetwork.visa, PKPaymentNetwork.masterCard]
-        } else {
-            request.supportedNetworks = [PKPaymentNetwork.visa, PKPaymentNetwork.masterCard]
-        }
+        request.supportedNetworks = self.convertToPaymentNetworks(self.supportedNetworks)
         
         // Check if Apple Pay is supported and present the payment authorization view controller
         if OPPPaymentProvider.canSubmitPaymentRequest(request) {
@@ -625,6 +618,53 @@ public class SwiftPaymentPlugin: NSObject,FlutterPlugin ,SFSafariViewControllerD
                 self.Presult = nil
             }
         }
+    }
+
+    /// Converts an array of network name strings to PKPaymentNetwork objects
+    /// Handles edge cases and provides fallbacks for invalid network names
+    private func convertToPaymentNetworks(_ networkStrings: [String]?) -> [PKPaymentNetwork] {
+        guard let networks = networkStrings, !networks.isEmpty else {
+            // Return default networks based on iOS version if no networks specified
+            if #available(iOS 12.1.1, *) {
+                return [PKPaymentNetwork.mada, PKPaymentNetwork.visa, PKPaymentNetwork.masterCard]
+            } else {
+                return [PKPaymentNetwork.visa, PKPaymentNetwork.masterCard]
+            }
+        }
+
+        var paymentNetworks: [PKPaymentNetwork] = []
+
+        for networkString in networks {
+            let lowercasedNetwork = networkString.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
+
+            switch lowercasedNetwork {
+            case "visa":
+                paymentNetworks.append(PKPaymentNetwork.visa)
+            case "mastercard", "master card":
+                paymentNetworks.append(PKPaymentNetwork.masterCard)
+            case "mada":
+                if #available(iOS 12.1.1, *) {
+                    paymentNetworks.append(PKPaymentNetwork.mada)
+                }
+                // Skip MADA on older iOS versions
+
+            default:
+                print("Warning: Unsupported payment network '\(networkString)'. Skipping.")
+                paymentNetworks.append(lowercasedNetwork)
+            }
+        }
+
+        // Ensure we have at least one valid network
+        if paymentNetworks.isEmpty {
+            print("Warning: No valid payment networks found. Using defaults.")
+            if #available(iOS 12.1.1, *) {
+                return [PKPaymentNetwork.mada, PKPaymentNetwork.visa, PKPaymentNetwork.masterCard]
+            } else {
+                return [PKPaymentNetwork.visa, PKPaymentNetwork.masterCard]
+            }
+        }
+
+        return paymentNetworks
     }
 }
 

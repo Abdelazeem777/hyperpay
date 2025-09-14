@@ -27,6 +27,10 @@ class ReadyUI {
   /// themColorHexIOS is likely intended to represent the hexadecimal color code for the theme color you want to use in your iOS app. The term may contain a typo; it's more commonly referred to as themeColorHexIOS.
   String themColorHexIOS;
 
+  /// supportedNetworksApplePayIOS defines the list of supported Apple Pay networks (e.g., ["visa", "masterCard", "mada"]).
+  /// If empty or null, defaults will be used based on iOS version.
+  List<String>? supportedNetworksApplePayIOS;
+
   ReadyUI({
     required this.checkoutId,
     required this.brandsName,
@@ -35,5 +39,6 @@ class ReadyUI {
     this.companyNameApplePayIOS = "",
     this.themColorHexIOS = "",
     this.setStorePaymentDetailsMode = false,
+    this.supportedNetworksApplePayIOS,
   });
 }

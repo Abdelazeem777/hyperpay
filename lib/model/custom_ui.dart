@@ -46,6 +46,10 @@ class CustomUI {
   /// Apple Pay amount - nullable for non-Apple Pay payments
   double? amount;
 
+  /// supportedNetworks defines the list of supported Apple Pay networks (e.g., ["visa", "masterCard", "mada"]).
+  /// If empty or null, defaults will be used based on iOS version.
+  List<String>? supportedNetworksApplePayIOS;
+
   CustomUI({
     required this.checkoutId,
     required this.brandName,
@@ -60,5 +64,6 @@ class CustomUI {
     this.companyName,
     this.currencyCode,
     this.amount,
+    this.supportedNetworksApplePayIOS,
   });
 }

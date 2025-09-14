@@ -7,18 +7,20 @@ import '../helper/helper.dart';
 /// It takes in parameters like brand, checkoutId, channelName, etc. which are essential for the payment to happen.
 /// It returns a PaymentResultData object which is processed and managed by PaymentResultManger.
 /// If there is any error, it is caught and a PaymentResultData object with error string is returned.
-Future<PaymentResultData> implementPayment(
-    {required List<String> brands,
-    required String checkoutId,
-    required String channelName,
-    required String shopperResultUrl,
-    required String lang,
-    required PaymentMode paymentMode,
-    required String merchantId,
-    required String countryCode,
-    String? companyName = "",
-    String? themColorHexIOS,
-    required bool setStorePaymentDetailsMode}) async {
+Future<PaymentResultData> implementPayment({
+  required List<String> brands,
+  required String checkoutId,
+  required String channelName,
+  required String shopperResultUrl,
+  required String lang,
+  required PaymentMode paymentMode,
+  required String merchantId,
+  required String countryCode,
+  String? companyName = "",
+  String? themColorHexIOS,
+  required bool setStorePaymentDetailsMode,
+  List<String>? supportedNetworks,
+}) async {
   String transactionStatus;
   var platform = MethodChannel(channelName);
   try {
@@ -35,6 +37,7 @@ Future<PaymentResultData> implementPayment(
         companyName: companyName,
         lang: lang,
         setStorePaymentDetailsMode: setStorePaymentDetailsMode,
+        supportedNetworks: supportedNetworks,
       ),
     );
     transactionStatus = '$result';
@@ -51,17 +54,19 @@ Future<PaymentResultData> implementPayment(
 /// paymentMode, and setStorePaymentDetailsMode. An optional parameter, themColorHexIOS,
 /// can also be provided. The function returns a Map with the corresponding values of type, mode,
 /// checkoutid, brand, lang, themColorHexIOS, ShopperResultUrl, and setStorePaymentDetailsMode.
-Map<String, dynamic> getReadyModelCards(
-    {required List<String> brands,
-    required String checkoutId,
-    required String shopperResultUrl,
-    required String lang,
-    required PaymentMode paymentMode,
-    required String merchantId,
-    required String countryCode,
-    String? companyName = "",
-    String? themColorHexIOS,
-    required bool setStorePaymentDetailsMode}) {
+Map<String, dynamic> getReadyModelCards({
+  required List<String> brands,
+  required String checkoutId,
+  required String shopperResultUrl,
+  required String lang,
+  required PaymentMode paymentMode,
+  required String merchantId,
+  required String countryCode,
+  String? companyName = "",
+  String? themColorHexIOS,
+  required bool setStorePaymentDetailsMode,
+  List<String>? supportedNetworks,
+}) {
   return {
     "type": PaymentConst.readyUi,
     "mode": paymentMode.toString().split('.').last,
@@ -74,5 +79,7 @@ Map<String, dynamic> getReadyModelCards(
     "themColorHexIOS": themColorHexIOS ?? "",
     "ShopperResultUrl": shopperResultUrl,
     "setStorePaymentDetailsMode": setStorePaymentDetailsMode.toString(),
+    if (supportedNetworks?.isNotEmpty == true)
+      "supportedNetworks": supportedNetworks,
   };
 }

@@ -27,6 +27,7 @@ Future<PaymentResultData> implementPaymentCustomUI({
   String? companyName,
   String? currencyCode,
   double? amount,
+  List<String>? supportedNetworks,
 }) async {
   String transactionStatus;
   var platform = MethodChannel(channelName);
@@ -50,6 +51,7 @@ Future<PaymentResultData> implementPaymentCustomUI({
         companyName: companyName,
         currencyCode: currencyCode,
         amount: amount,
+        supportedNetworks: supportedNetworks,
       ),
     );
     transactionStatus = '$result';
@@ -83,6 +85,7 @@ Map<String, dynamic> getCustomUiModelCards({
   String? companyName,
   String? currencyCode,
   double? amount,
+  List<String>? supportedNetworks,
 }) {
   Map<String, dynamic> data = {
     "type": PaymentConst.customUi,
@@ -114,6 +117,9 @@ Map<String, dynamic> getCustomUiModelCards({
   }
   if (amount != null) {
     data["amount"] = amount;
+  }
+  if (supportedNetworks != null && supportedNetworks.isNotEmpty) {
+    data["supportedNetworks"] = supportedNetworks;
   }
 
   return data;
